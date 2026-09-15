@@ -1,0 +1,174 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SchoolCard from '@/components/school/SchoolCard.astro';
+import { INSTRUMENTS } from '@/data/cities';
+import { searchSchools } from '@/data/schools';
+
+const q = Astro.url.searchParams.get('q') ?? '';
+const zip = Astro.url.searchParams.get('zip') ?? '';
+const instrument = Astro.url.searchParams.get('instrument') ?? '';
+const rating = Astro.url.searchParams.get('rating') ?? '';
+const price = Astro.url.searchParams.get('price') ?? '';
+const featured = Astro.url.searchParams.get('featured') === 'true';
+const sortBy = Astro.url.searchParams.get('sort') ?? 'rating';
+
+let zipData: { lat: number; lng: number; city: string; state: string } | null = null;
+if (zip && /^\d{5}$/.test(zip)) {
+  try {
+    const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (res.ok) {
+      const data = await res.json();
+      zipData = {
+        lat: parseFloat(data.places[0].latitude),
+        lng: parseFloat(data.places[0].longitude),
+        city: data.places[0]['place name'],
+        state: data.places[0]['state abbreviation'],
+      };
+    }
+  } catch (e) {
+    console.error('[search] Zip lookup failed:', e);
+  }
+}
+
+const schools = searchSchools({
+  q,
+  zip,
+  instrument,
+  rating,
+  price,
+  featured,
+  sort: sortBy,
+  zipCoords: zipData,
+});
+
+const pageTitle = q
+  ? `Results for “${q}”`
+  : instrument
+    ? `${instrument} lessons`
+    : featured
+      ? 'Featured Schools'
+      : zip
+        ? `Music schools near ${zip}`
+        : 'School Directory';
+---
+
+<Layout title={pageTitle} description={`Browse music schools for kids. ${instrument ? `Programs in ${instrument}.` : ''}`}>
+
+  <div class="border-b bg-slate-50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">{pageTitle}</h1>
+      <div class="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+        {zipData && (
+          <span>Near {zipData.city}, {zipData.state} · within 100 miles</span>
+        )}
+        <span class="font-medium text-foreground">{schools.length} listing{schools.length !== 1 ? 's' : ''} found</span>
+        {(q || zip || instrument || rating || price || featured) && (
+          <a href="/search" class="ml-auto text-xs text-primary hover:underline font-medium">Clear all filters</a>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <aside class="w-full lg:w-72 shrink-0">
+        <form method="get" action="/search" class="rounded-2xl border bg-card shadow-sm overflow-hidden">
+          <div class="border-b px-5 py-4 flex items-center justify-between">
+            <h2 class="font-semibold text-foreground">Filters</h2>
+          </div>
+
+          <div class="p-5 space-y-5">
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold uppercase tracking-wide text-muted-foreground" for="zip">Location</label>
+              {q && <input type="hidden" name="q" value={q} />}
+              <input
+                id="zip" name="zip" type="text" maxlength="5" placeholder="ZIP code"
+                value={zip}
+                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold uppercase tracking-wide text-muted-foreground" for="instrument">Instrument</label>
+              <select id="instrument" name="instrument"
+                class="flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">All instruments</option>
+                {INSTRUMENTS.map(s => (
+                  <option value={s.name} selected={instrument === s.name}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold uppercase tracking-wide text-muted-foreground" for="rating">Min Rating</label>
+              <select id="rating" name="rating"
+                class="flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">Any Rating</option>
+                {['4.5','4.0','3.5','3.0'].map(r => (
+                  <option value={r} selected={rating === r}>{r}+ stars</option>
+                ))}
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price Range</label>
+              <div class="grid grid-cols-4 gap-1.5">
+                {['$','$$','$$$','$$$$'].map(p => (
+                  <label class={`flex cursor-pointer items-center justify-center rounded-lg border py-1.5 text-xs font-semibold transition-all ${price === p ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-background text-muted-foreground hover:border-primary/50'}`}>
+                    <input type="radio" name="price" value={p} checked={price === p} class="sr-only" />
+                    {p}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <label class="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-background p-3 transition-all hover:border-primary/50">
+              <span class="text-sm font-medium text-foreground">Featured only</span>
+              <div class={`relative h-5 w-9 rounded-full transition-colors ${featured ? 'bg-primary' : 'bg-muted'}`}>
+                <div class={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${featured ? 'translate-x-4' : 'translate-x-0.5'}`}></div>
+              </div>
+              <input id="featured" name="featured" type="checkbox" value="true" checked={featured} class="sr-only" />
+            </label>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold uppercase tracking-wide text-muted-foreground" for="sort">Sort By</label>
+              <select id="sort" name="sort"
+                class="flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="rating" selected={sortBy === 'rating'}>Highest Rated</option>
+                <option value="reviews" selected={sortBy === 'reviews'}>Most Reviewed</option>
+                <option value="featured" selected={sortBy === 'featured'}>Featured First</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="border-t p-4">
+            <button type="submit"
+              class="w-full rounded-md bg-primary py-2.5 text-sm font-semibold text-white hover:bg-[hsl(213,72%,18%)]">
+              Apply Filters
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <div class="flex-1 min-w-0">
+        {schools.length > 0 ? (
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {schools.map(school => (
+              <SchoolCard school={school} />
+            ))}
+          </div>
+        ) : (
+          <div class="flex flex-col items-center justify-center rounded-lg border bg-slate-50 py-24 text-center">
+            <h3 class="font-semibold text-foreground text-lg">No listings found</h3>
+            <p class="mt-1 text-sm text-muted-foreground max-w-xs">
+              Try adjusting your filters or searching a different zip code.
+            </p>
+            <a href="/search" class="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium">
+              Clear all filters
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</Layout>

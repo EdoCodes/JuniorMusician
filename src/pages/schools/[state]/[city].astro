@@ -1,0 +1,146 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SchoolCard from '@/components/school/SchoolCard.astro';
+import { CITIES, getCityBySlug, INSTRUMENTS } from '@/data/cities';
+import { schoolsInCity } from '@/data/schools';
+
+const { state, city } = Astro.params;
+const cityData = getCityBySlug(state!, city!);
+
+if (!cityData) return Astro.redirect('/search');
+
+const schools = schoolsInCity(cityData.city, cityData.stateAbbr);
+const nearbyCities = CITIES.filter(c => c.stateSlug === cityData.stateSlug && c.citySlug !== cityData.citySlug).slice(0, 5);
+
+const pageTitle = `Music schools in ${cityData.city}, ${cityData.state}`;
+const pageDesc = `Find kids’ music schools in ${cityData.city}, ${cityData.state}. Browse piano, violin, guitar, voice, and more.`;
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+
+  <section class="bg-[hsl(var(--navy))]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <nav class="flex items-center gap-2 text-xs text-white/50 mb-6">
+        <a href="/" class="hover:text-white">Home</a>
+        <span>/</span>
+        <a href="/search" class="hover:text-white">Directory</a>
+        <span>/</span>
+        <span class="text-white/70">{cityData.state}</span>
+        <span>/</span>
+        <span class="text-white">{cityData.city}</span>
+      </nav>
+
+      <div class="max-w-2xl">
+        <p class="text-xs font-semibold uppercase tracking-widest text-white/60 mb-3">{cityData.city}, {cityData.state}</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4">
+          Music schools in {cityData.city}
+        </h1>
+        <p class="text-white/75 text-lg leading-relaxed mb-8">
+          {cityData.city} is {cityData.description}. Filter by instrument, rating, and price.
+        </p>
+
+        <form action="/search" method="get" class="flex gap-3 max-w-md">
+          <select name="instrument"
+            class="flex-1 h-11 rounded-md border-0 bg-white px-3 text-sm text-foreground">
+            <option value="">All instruments</option>
+            {INSTRUMENTS.map(s => (
+              <option value={s.name}>{s.name}</option>
+            ))}
+          </select>
+          <button type="submit"
+            class="h-11 rounded-md bg-[hsl(var(--cta))] px-5 text-sm font-semibold text-white hover:bg-[hsl(350,80%,44%)] shrink-0">
+            Search
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col lg:flex-row gap-10">
+      <div class="flex-1 min-w-0">
+        <div class="grid grid-cols-3 gap-4 mb-10">
+          {[
+            { label: 'Listings', value: schools.length.toString() },
+            { label: 'Type', value: 'Sample' },
+            { label: 'Programs', value: [...new Set(schools.flatMap(s => s.instruments))].length.toString() },
+          ].map(s => (
+            <div class="rounded-2xl border bg-card p-5 text-center">
+              <div class="text-2xl font-bold text-foreground">{s.value}</div>
+              <div class="text-xs text-muted-foreground mt-1">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold text-foreground mb-6">
+            Schools in {cityData.city} ({schools.length})
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {schools.map(p => (
+              <SchoolCard school={p} />
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-16 rounded-2xl border bg-muted/30 p-8">
+          <h2 class="text-xl font-bold text-foreground mb-4">
+            Finding a music school in {cityData.city}, {cityData.state}
+          </h2>
+          <div class="text-muted-foreground max-w-none space-y-3 text-sm leading-relaxed">
+            <p>
+              {cityData.city} is {cityData.description}. Parents typically compare instruments offered, ages served, lesson format, and recital calendars.
+            </p>
+            <p>
+              Listings help you start a search. Use School website to open a live Google search for lessons in this city, then confirm the school before you enroll.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-10">
+          <h3 class="text-lg font-semibold text-foreground mb-4">Browse by instrument in {cityData.city}</h3>
+          <div class="flex flex-wrap gap-2.5">
+            {INSTRUMENTS.map(s => (
+              <a
+                href={`/search?instrument=${encodeURIComponent(s.name)}`}
+                class="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-primary/50 hover:bg-accent hover:text-primary transition-all shadow-sm"
+              >
+                {s.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <aside class="w-full lg:w-72 shrink-0 space-y-5">
+        <div class="rounded-lg bg-[hsl(var(--navy))] p-6 text-center">
+          <h3 class="font-bold text-white mb-2">Run a school in {cityData.city}?</h3>
+          <p class="text-white/70 text-xs mb-4 leading-relaxed">
+            List for free and show up when parents search this city.
+          </p>
+          <a href="/register"
+            class="block w-full rounded-md bg-white py-2.5 text-sm font-semibold text-[hsl(var(--navy))]">
+            List your school
+          </a>
+        </div>
+
+        {nearbyCities.length > 0 && (
+          <div class="rounded-2xl border bg-card p-5">
+            <h3 class="font-semibold text-foreground text-sm mb-4">Nearby cities in {cityData.state}</h3>
+            <div class="space-y-2">
+              {nearbyCities.map(c => (
+                <a
+                  href={`/schools/${c.stateSlug}/${c.citySlug}`}
+                  class="flex items-center justify-between rounded-xl border bg-background px-3 py-2.5 text-sm text-foreground hover:border-primary/40 hover:text-primary transition-all"
+                >
+                  <span>{c.city}</span>
+                  <span class="text-xs text-muted-foreground">→</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</Layout>

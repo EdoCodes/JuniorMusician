@@ -1,0 +1,93 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getSchoolBySlug } from '@/data/schools';
+import { CITIES } from '@/data/cities';
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/search');
+
+const school = getSchoolBySlug(slug);
+if (!school) return Astro.redirect('/search');
+
+const cityPage = CITIES.find(
+  c => c.city.toLowerCase() === school.city.toLowerCase() && c.stateAbbr === school.state
+);
+---
+
+<Layout
+  title={school.name}
+  description={`${school.name}, ${school.street}, ${school.city}, ${school.state} ${school.zip}. Sample directory listing.`}
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
+    <a href="/search" class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+      ← Back to search
+    </a>
+
+    <div class="mb-8 rounded-md border border-border border-l-4 border-l-[hsl(var(--navy))] bg-white p-5 sm:p-6">
+        {school.featured && (
+          <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">Featured listing</p>
+        )}
+        <h1 class="text-2xl sm:text-3xl font-bold text-[hsl(var(--navy))]">{school.name}</h1>
+        <p class="mt-3 text-sm text-foreground">
+          {school.street}<br />
+          {school.city}, {school.state} {school.zip}
+        </p>
+        <p class="mt-3 text-sm">
+          <a href={school.website_url} rel="noopener noreferrer" target="_blank" class="font-medium text-primary hover:underline">
+            School website
+          </a>
+        </p>
+        <p class="mt-1 text-sm">
+          <a href={school.maps_url} rel="noopener noreferrer" target="_blank" class="font-medium text-primary hover:underline">
+            Map
+          </a>
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {school.instruments.map((s: string) => (
+            <a
+              href={`/search?instrument=${encodeURIComponent(s)}`}
+              class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-foreground hover:border-primary hover:text-primary"
+            >
+              {s}
+            </a>
+          ))}
+        </div>
+        {cityPage && (
+          <a
+            href={`/schools/${cityPage.stateSlug}/${cityPage.citySlug}`}
+            class="mt-5 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-[hsl(213,72%,18%)]"
+          >
+            More in {school.city}
+          </a>
+        )}
+      </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <section>
+          <h2 class="text-xl font-semibold text-foreground mb-3">About {school.name}</h2>
+          <p class="text-muted-foreground leading-relaxed">{school.bio}</p>
+        </section>
+      </div>
+      <aside>
+        <div class="rounded-xl border bg-card p-5 space-y-4">
+          <h3 class="font-semibold text-foreground">Quick Info</h3>
+          <dl class="space-y-3 text-sm">
+            <div class="flex justify-between gap-4">
+              <dt class="text-muted-foreground">Address</dt>
+              <dd class="font-medium text-foreground text-right">{school.street}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-muted-foreground">Ages</dt>
+              <dd class="font-medium text-foreground">{school.ages}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-muted-foreground">Price band</dt>
+              <dd class="font-medium text-foreground">{school.price_range}</dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,68 @@
+---
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/search', label: 'School Directory' },
+  { href: '/instruments', label: 'Instruments' },
+  { href: '/about', label: 'About' },
+  { href: '/advertise', label: 'For Schools' },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 border-b bg-white">
+  <div class="mx-auto flex h-[68px] max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+    <a href="/" class="flex shrink-0 items-center gap-2.5">
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--navy))] text-white font-bold text-sm tracking-tight">JM</span>
+      <span class="hidden sm:block leading-tight">
+        <span class="block text-[15px] font-bold text-[hsl(var(--navy))]">Junior Musician</span>
+        <span class="block text-[11px] font-medium text-muted-foreground">Nationwide Music School Directory</span>
+      </span>
+    </a>
+
+    <form action="/search" method="get" class="hidden lg:flex flex-1 items-center max-w-xl mx-auto">
+      <div class="flex w-full overflow-hidden rounded-md border border-border bg-white">
+        <input
+          type="text"
+          name="q"
+          placeholder="School or instrument"
+          class="h-10 min-w-0 flex-1 px-3 text-sm outline-none"
+        />
+        <div class="w-px bg-border"></div>
+        <input
+          type="text"
+          name="zip"
+          placeholder="City or ZIP"
+          maxlength="10"
+          class="h-10 w-36 px-3 text-sm outline-none"
+        />
+        <button type="submit" class="h-10 bg-[hsl(var(--cta))] px-4 text-sm font-semibold text-white hover:bg-[hsl(350,80%,44%)]">
+          Search
+        </button>
+      </div>
+    </form>
+
+    <div class="ml-auto flex items-center gap-2">
+      <a href="/register" class="inline-flex items-center rounded-md bg-[hsl(var(--cta))] px-3.5 py-2 text-sm font-semibold text-white hover:bg-[hsl(350,80%,44%)]">
+        List Your School
+      </a>
+    </div>
+  </div>
+
+  <nav class="bg-[hsl(var(--navy))]">
+    <div class="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 sm:px-6 lg:px-8 h-11 scrollbar-none">
+      {navLinks.map(link => {
+        const active = link.href === '/' ? currentPath === '/' : currentPath.startsWith(link.href);
+        return (
+          <a
+            href={link.href}
+            class={`shrink-0 px-3 py-2 text-[13px] font-medium transition-colors ${
+              active ? 'text-white' : 'text-white/70 hover:text-white'
+            }`}
+          >
+            {link.label}
+          </a>
+        );
+      })}
+    </div>
+  </nav>
+</header>

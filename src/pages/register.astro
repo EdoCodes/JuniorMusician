@@ -1,0 +1,81 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { INSTRUMENTS } from '@/data/cities';
+---
+
+<Layout title="List Your School" description="Create your music school profile on Junior Musician.">
+  <div class="mx-auto max-w-2xl px-4 py-12">
+    <div class="text-center mb-8">
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[hsl(var(--navy))] text-white text-sm font-bold mx-auto">JM</span>
+      <h1 class="mt-4 text-2xl font-bold text-foreground">List Your Music School</h1>
+      <p class="mt-1 text-sm text-muted-foreground">Create your profile and start connecting with local families</p>
+    </div>
+
+    <div class="rounded-2xl border bg-card p-8 shadow-sm">
+      <form id="register-form" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-foreground" for="name">School name *</label>
+            <input id="name" name="name" type="text" required placeholder="e.g. Harmony Hills Music Academy"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-foreground" for="email">Email *</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-foreground" for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel" placeholder="(555) 000-0000"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-foreground" for="zip">ZIP code</label>
+            <input id="zip" name="zip" type="text" maxlength="5" placeholder="90210"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-foreground" for="bio">About the school *</label>
+          <textarea id="bio" name="bio" required rows={4} placeholder="Ages served, instruments, recitals, trial lessons…"
+            class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-foreground">Instruments * (select all that apply)</label>
+          <div class="flex flex-wrap gap-2">
+            {INSTRUMENTS.map(s => (
+              <label class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium text-foreground transition-colors hover:border-primary hover:text-primary has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary">
+                <input type="checkbox" name="instruments" value={s.name} class="sr-only" />
+                {s.name}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <button type="submit" class="w-full rounded-md bg-[hsl(var(--cta))] py-2.5 text-sm font-semibold text-white hover:bg-[hsl(350,80%,44%)]">
+          Submit listing request
+        </button>
+        <p id="form-status" class="text-sm text-center text-muted-foreground hidden"></p>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('register-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (status) {
+      status.classList.remove('hidden');
+      status.textContent = 'Thanks. Listing intake is not connected to a database yet. We logged this request locally so you can confirm the form works. Check the browser console for submitted fields.';
+    }
+    const data = new FormData(form);
+    console.info('[register] Listing request', Object.fromEntries(data.entries()), data.getAll('instruments'));
+  });
+</script>

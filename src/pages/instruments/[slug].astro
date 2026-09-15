@@ -1,0 +1,37 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SchoolCard from '@/components/school/SchoolCard.astro';
+import { INSTRUMENTS } from '@/data/cities';
+import { schoolsByInstrument } from '@/data/schools';
+
+const { slug } = Astro.params;
+const instrument = INSTRUMENTS.find(s => s.slug === slug);
+if (!instrument) return Astro.redirect('/instruments');
+
+const schools = schoolsByInstrument(instrument.name);
+---
+
+<Layout title={`${instrument.name} lessons for kids`} description={instrument.description}>
+  <section class="bg-[hsl(var(--navy))] py-14">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-white/60 mb-3">Instrument</p>
+      <h1 class="text-4xl font-bold text-white mb-3">{instrument.name}</h1>
+      <p class="text-white/75 leading-relaxed">{instrument.description}</p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    {schools.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {schools.map(school => (
+          <SchoolCard school={school} />
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-lg border bg-slate-50 py-16 text-center">
+        <p class="font-semibold text-foreground">No {instrument.name} listings yet</p>
+        <a href="/search" class="mt-2 inline-block text-sm text-primary font-medium hover:underline">Browse all schools</a>
+      </div>
+    )}
+  </div>
+</Layout>

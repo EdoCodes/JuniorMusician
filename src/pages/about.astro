@@ -1,0 +1,66 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout title="About Us" description="Junior Musician is a nationwide directory connecting families with kids’ music schools.">
+
+  <section class="bg-[hsl(var(--navy))] py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-white/60 mb-3">About</p>
+      <h1 class="text-4xl font-bold text-white mb-3">A professional music-school directory</h1>
+      <p class="text-white/75 text-lg leading-relaxed">
+        Junior Musician lists kids’ music schools across the United States so parents can compare instruments, ages, reviews, and location in one place.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary mb-3">Our mission</p>
+        <h2 class="text-2xl font-bold text-foreground mb-4">Clear listings. Honest reviews.</h2>
+        <p class="text-muted-foreground leading-relaxed text-sm">
+          Every school has a real profile, published instruments, and parent-facing details. We built this directory to look and work like a professional business listing — not a hobby blog.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        {[
+          { value: '18+', label: 'Starter listings' },
+          { value: '4.7',  label: 'Average rating' },
+          { value: '25+',  label: 'Major cities' },
+          { value: '12',   label: 'Program types' },
+        ].map(s => (
+          <div class="rounded-lg border bg-white p-5">
+            <div class="text-2xl font-bold text-foreground">{s.value}</div>
+            <div class="text-xs text-muted-foreground mt-1">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-foreground mb-8">What we stand for</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {[
+          { title: 'Transparency', desc: 'Profiles show instruments, ages, and listed pricing bands. No hidden directory fees for families.' },
+          { title: 'Trust', desc: 'We start with real-looking local programs and will replace sample data with verified schools as we collect them.' },
+          { title: 'Access', desc: 'From community sliding-scale studios to conservatory-prep schools, listings cover a range of tuition.' },
+        ].map(v => (
+          <div class="rounded-lg border bg-white p-6">
+            <h3 class="font-semibold text-foreground mb-2">{v.title}</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">{v.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[hsl(var(--navy))] rounded-lg p-10 text-center">
+      <h2 class="text-2xl font-bold text-white mb-3">Ready to find a school?</h2>
+      <p class="text-white/70 mb-6 text-sm">Browse the directory by city or instrument.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/search" class="inline-flex items-center justify-center rounded-md bg-white px-6 py-3 text-sm font-semibold text-[hsl(var(--navy))]">Browse listings</a>
+        <a href="/instruments" class="inline-flex items-center justify-center rounded-md border border-white/25 px-6 py-3 text-sm font-semibold text-white">View instruments</a>
+      </div>
+    </section>
+  </div>
+</Layout>

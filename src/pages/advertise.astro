@@ -1,0 +1,117 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout title="Advertise — List Your Music School" description="Reach parents searching for kids’ music lessons. List your school on Junior Musician. Free basic listing. Featured upgrades available.">
+
+  <section class="bg-[hsl(var(--navy))] py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-white/60 mb-3">For schools</p>
+      <h1 class="text-4xl font-bold text-white mb-4">Grow enrollments with a professional listing</h1>
+      <p class="text-white/75 text-lg leading-relaxed max-w-xl">
+        Appear in city and instrument searches used by parents who are already looking for lessons.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <a href="/register" class="inline-flex items-center justify-center rounded-md bg-[hsl(var(--cta))] px-6 py-3 text-sm font-semibold text-white hover:bg-[hsl(350,80%,44%)]">
+          Create a free listing
+        </a>
+        <a href="#pricing" class="inline-flex items-center justify-center rounded-md border border-white/25 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
+          View pricing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+    <section>
+      <h2 class="text-2xl font-bold text-foreground text-center mb-10 tracking-tight">Why list on Junior Musician?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          { title: 'Targeted traffic', desc: 'Visitors are searching for kids’ lessons by city, instrument, and rating.' },
+          { title: 'Local and national reach', desc: 'Show up in city landing pages and nationwide search results.' },
+          { title: 'Social proof', desc: 'Collect parent reviews that build trust and support more trial lessons.' },
+          { title: 'Search-ready pages', desc: 'Each school gets a dedicated page designed for discovery in search engines.' },
+          { title: 'Simple profile', desc: 'Update instruments, ages, and tuition band whenever you need to.' },
+          { title: 'Free to start', desc: 'Create a basic listing at no cost. Upgrade to featured when you want more visibility.' },
+        ].map(b => (
+          <div class="rounded-lg border bg-white p-6">
+            <h3 class="font-semibold text-foreground mb-2">{b.title}</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="pricing">
+      <h2 class="text-2xl font-bold text-foreground text-center mb-3 tracking-tight">Simple, Transparent Pricing</h2>
+      <p class="text-center text-muted-foreground text-sm mb-10">No hidden fees. No long-term contracts. Cancel any time.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="rounded-2xl border bg-card p-7 flex flex-col">
+          <div class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Basic</div>
+          <div class="text-4xl font-bold text-foreground mb-1">Free</div>
+          <div class="text-xs text-muted-foreground mb-6">Forever</div>
+          <ul class="space-y-2.5 text-sm text-muted-foreground flex-1 mb-8">
+            {['Public profile page', 'Up to 3 instruments', 'Parent reviews', 'Searchable in directory', 'City & instrument pages'].map(f => (
+              <li class="flex items-center gap-2.5">
+                <span class="text-green-500 font-bold text-xs">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a href="/register" class="block text-center rounded-xl border border-border py-2.5 text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
+            Get Started Free
+          </a>
+        </div>
+
+        <div class="rounded-2xl border-2 border-primary bg-card p-7 flex flex-col relative shadow-lg shadow-primary/10">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
+            Most Popular
+          </div>
+          <div class="text-xs font-semibold uppercase tracking-widest text-primary mb-3">Featured</div>
+          <div class="flex items-end gap-1 mb-1">
+            <span class="text-4xl font-bold text-foreground">$29</span>
+            <span class="text-muted-foreground text-sm mb-1.5">/month</span>
+          </div>
+          <div class="text-xs text-muted-foreground mb-6">Billed monthly · cancel anytime</div>
+          <ul class="space-y-2.5 text-sm text-muted-foreground flex-1 mb-8">
+            {['Everything in Basic', 'Featured badge on profile', 'Priority search placement', 'Top of city & instrument pages', 'Up to 10 instruments'].map(f => (
+              <li class="flex items-center gap-2.5">
+                <span class="text-primary font-bold text-xs">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a href="/register?plan=featured" class="block text-center rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+            Start Featured
+          </a>
+        </div>
+
+        <div class="rounded-2xl border bg-card p-7 flex flex-col">
+          <div class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Network</div>
+          <div class="text-4xl font-bold text-foreground mb-1">$99</div>
+          <div class="text-xs text-muted-foreground mb-6">/month · up to 10 locations</div>
+          <ul class="space-y-2.5 text-sm text-muted-foreground flex-1 mb-8">
+            {['Everything in Featured', 'Manage multiple campuses', 'Network badge', 'Dedicated landing page', 'Priority support'].map(f => (
+              <li class="flex items-center gap-2.5">
+                <span class="text-green-500 font-bold text-xs">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a href="mailto:advertise@juniormusician.com" class="block text-center rounded-xl border border-border py-2.5 text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="text-center">
+      <h2 class="text-2xl font-bold text-foreground mb-3">Ready to grow your school?</h2>
+      <p class="text-muted-foreground text-sm mb-6">Create a listing and appear in the nationwide directory.</p>
+      <a href="/register" class="inline-flex items-center rounded-md bg-primary px-8 py-3 text-sm font-semibold text-white hover:bg-[hsl(213,72%,18%)]">
+        Create your free listing
+      </a>
+    </section>
+  </div>
+</Layout>
